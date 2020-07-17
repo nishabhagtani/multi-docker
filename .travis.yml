@@ -1,0 +1,17 @@
+language: generic 
+sudo: required
+services:
+  - docker
+
+before_install:
+  - docker build -t nishab/react-test -f ./client/Dockerfile.dev ./client
+
+script:
+  - docker run -e CI=true nishab/react-test npm test
+
+after_success:
+  - docker build -t nishab/multi-client ./client
+  - docker build -t nishab/multi-nginx ./nginx
+  - docker build -t nishab/multi-server ./server
+  - docker build -t nishab/multi-worker ./worker
+  # take those images and push them to docker hub
